@@ -21,21 +21,22 @@ class S3fsStreamOverrideManager extends AssetDumper implements S3fsStreamOverrid
    *   An URI to access the dumped asset.
    */
   public function dump($data, $file_extension) {
-    dsm('in dump');
-    //http://localhost/projects/drupal-7.43/s3fs-css/css/css_YXBpU-PIcsLPZrrUcGv3oBTJ6bWjX3eTnFYuWNGa4NE.css
-    //return "{$GLOBALS['base_url']}/s3fs-css/" . drupal_encode_path($s3_key);
     // Prefix filename to prevent blocking by firewalls which reject files
     // starting with "ad*".
     $filename = $file_extension. '_' . Crypt::hashBase64($data) . '.' . $file_extension;
     // Create the css/ or js/ path within the S3 bucket.
-    if(\Drupal::config('s3fs.settings')->get('no_rewrite_cssjs')) {
-      $path = 's3fs://' . $file_extension;
+    if(\Drupal::config('s3fs.settings')->get('use_s3_for_public')) {
+      if(\Drupal::config('s3fs.settings')->get('no_rewrite_cssjs')) {
+        $path = 's3fs://' . $file_extension;
+      }
+      else {
+        $path = ($file_extension==='css')?"{$GLOBALS['base_url']}/s3fs-css/css":"{$GLOBALS['base_url']}/s3fs-js/js";
+        $uri = $path . '/' . $filename;
+        return $uri;
+      }
     }
     else {
-      ///sites/default/files/css/css_DImuuvc9S8V88m4n2WP6xWYIYqktcP21urgDq7ksjK8.css?o8c8p0
       $path = 'public://' . $file_extension;
-      //return "{$GLOBALS['base_url']}/s3fs-css/" . drupal_encode_path($s3_key);
-      //return "{$GLOBALS['base_url']}/s3fs-js/" . drupal_encode_path($s3_key);
     }
 
     $uri = $path . '/' . $filename;
