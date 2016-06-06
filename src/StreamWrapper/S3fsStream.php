@@ -10,6 +10,7 @@ namespace Drupal\s3fs\StreamWrapper;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\StreamWrapper\LocalStream;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Aws\S3\S3Client;
@@ -25,7 +26,7 @@ use Drupal\image\Entity\ImageStyle;
  * In the docs for this class, anywhere you see "<scheme>", it can mean either
  * "s3" or "public", depending on which stream is currently being serviced.
  */
-class S3fsStream implements StreamWrapperInterface {
+class S3fsStream extends LocalStream {
   /** @var StreamInterface Underlying stream resource */
   private $body;
 
@@ -257,7 +258,7 @@ class S3fsStream implements StreamWrapperInterface {
    * {@inheritdoc}
    */
   public static function getType() {
-    return StreamWrapperInterface::NORMAL;
+    return StreamWrapperInterface::LOCAL;
   }
 
     /**
@@ -297,7 +298,6 @@ class S3fsStream implements StreamWrapperInterface {
    */
   public function setUri($uri) {
     $this->_debug("setUri($uri) called.");
-
     $this->uri = $uri;
   }
   /**
@@ -307,8 +307,7 @@ class S3fsStream implements StreamWrapperInterface {
    *   The current URI of the instance.
    */
   public function getUri() {
-   $this->_debug("getUri() called for {$this->uri}.");
-
+    $this->_debug("getUri() called for {$this->uri}.");
     return $this->uri;
   }
 
