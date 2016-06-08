@@ -258,7 +258,7 @@ class S3fsStream extends LocalStream {
    * {@inheritdoc}
    */
   public static function getType() {
-    return StreamWrapperInterface::LOCAL;
+    return StreamWrapperInterface::NORMAL;
   }
 
     /**
